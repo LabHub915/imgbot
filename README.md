@@ -41,7 +41,11 @@
 
 複製範例檔案：
 
-```powershell
+```bash
+# Linux/macOS
+cp .env.example .env
+
+# Windows
 copy .env.example .env
 ```
 
@@ -72,11 +76,16 @@ docker compose up -d --build
 
 執行以下指令查詢目前的 URL：
 
-```powershell
-.\show-urls.ps1
-```
+```bash
+# Linux/macOS
+./show-urls.sh
 
-或雙擊 `show-urls.bat`
+# Windows PowerShell
+.\show-urls.ps1
+
+# Windows 批次檔
+show-urls.bat
+```
 
 輸出範例：
 ```
@@ -113,7 +122,8 @@ https://xxxx.ngrok-free.app/admin
 | `docker compose ps` | 查看容器狀態 |
 | `docker compose logs -f app` | 查看 Flask 即時日誌 |
 | `docker compose restart` | 重啟所有容器 |
-| `.\show-urls.ps1` | 查詢目前的 ngrok URL |
+| `./show-urls.sh` | 查詢 ngrok URL (Linux/macOS) |
+| `.\show-urls.ps1` | 查詢 ngrok URL (Windows) |
 
 ---
 
@@ -152,8 +162,9 @@ imgbot/
 ├── .env.example          # 環境變數範例
 ├── .gitignore
 ├── README.md
+├── show-urls.sh          # 查詢 URL（Linux/macOS）
 ├── show-urls.bat         # 查詢 URL（Windows 批次檔）
-├── show-urls.ps1         # 查詢 URL（PowerShell）
+├── show-urls.ps1         # 查詢 URL（Windows PowerShell）
 ├── app/
 │   ├── Dockerfile
 │   ├── requirements.txt
