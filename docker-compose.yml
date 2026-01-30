@@ -1,0 +1,49 @@
+services:
+  mongodb:
+    image: mongo:4.4
+    container_name: imgbot-mongo
+    restart: unless-stopped
+    command: mongod --wiredTigerCacheSizeGB 0.25
+    volumes:
+      - ./mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=imgbot
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  app:
+    build: ./app
+    container_name: imgbot-app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/imgbot
+      - LINE_CHANNEL_SECRET=${LINE_CHANNEL_SECRET}
+      - LINE_CHANNEL_ACCESS_TOKEN=${LINE_CHANNEL_ACCESS_TOKEN}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - SECRET_KEY=${SECRET_KEY:-changeme}
+    depends_on:
+      - mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  ngrok:
+    image: ngrok/ngrok:alpine
+    container_name: imgbot-ngrok
+    restart: unless-stopped
+    command: http app:5000 --log stdout --request-header-add "ngrok-skip-browser-warning:true"
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    ports:
+      - "4040:4040" # ngrok web UI for viewing tunnel URL
+    depends_on:
+      - app
+    deploy:
+      resources:
+        limits:
+          memory: 64M

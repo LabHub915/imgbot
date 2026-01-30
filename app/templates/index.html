@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>梗圖機器人管理</title>
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #e94560;
+            --accent-hover: #ff6b6b;
+            --text-primary: #eef0f2;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a4a;
+            --success: #4ecdc4;
+            --danger: #ff6b6b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: var(--accent);
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-edit {
+            background: transparent;
+            border: 2px solid var(--success);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+
+        .btn-edit:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .meme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .meme-item {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .meme-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .meme-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: var(--bg-primary);
+        }
+
+        .meme-info {
+            padding: 1rem;
+        }
+
+        .meme-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .keyword-tag {
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .meme-url {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+            margin-bottom: 1rem;
+        }
+
+        .meme-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .flash-success {
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .flash-error {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .meme-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎭 梗圖機器人管理</h1>
+
+        <div class="user-info">
+            👤 {{ session.username }} ({{ '管理員' if session.role == 'admin' else '一般使用者' }})
+        </div>
+
+        <nav class="nav">
+            <a href="{{ url_for('admin_index') }}" class="active">📋 梗圖管理</a>
+            {% if session.role == 'admin' %}
+            <a href="{{ url_for('admin_users') }}">👥 使用者管理</a>
+            {% endif %}
+            <a href="{{ url_for('change_password') }}">🔐 變更密碼</a>
+            <a href="{{ url_for('logout') }}">🚪 登出</a>
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        <div class="card">
+            <h2>➕ 新增梗圖</h2>
+            <form action="{{ url_for('admin_add') }}" method="POST">
+                <div class="form-group">
+                    <label for="keywords">關鍵字 (以逗號分隔)</label>
+                    <input type="text" id="keywords" name="keywords" placeholder="例如: 我就爛, 躺平, 擺爛" required>
+                </div>
+                <div class="form-group">
+                    <label for="image_url">圖片網址 (建議使用 jsDelivr CDN)</label>
+                    <input type="url" id="image_url" name="image_url"
+                        placeholder="https://cdn.jsdelivr.net/gh/user/repo/image.png" required>
+                </div>
+                <button type="submit" class="btn btn-primary">新增梗圖</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>📋 已儲存的梗圖 ({{ memes|length }})</h2>
+            {% if memes %}
+            <div class="meme-grid">
+                {% for meme in memes %}
+                <div class="meme-item">
+                    <img class="meme-image" src="{{ meme.image_url }}" alt="Meme"
+                        onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>'">
+                    <div class="meme-info">
+                        <div class="meme-keywords">
+                            {% for kw in meme.keywords %}
+                            <span class="keyword-tag">{{ kw }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="meme-url">{{ meme.image_url[:60] }}...</div>
+                        <div class="meme-actions">
+                            <a href="{{ url_for('admin_edit', meme_id=meme._id) }}" class="btn btn-edit">編輯</a>
+                            <form action="{{ url_for('admin_delete', meme_id=meme._id) }}" method="POST"
+                                style="display:inline;" onsubmit="return confirm('確定要刪除嗎？')">
+                                <button type="submit" class="btn btn-danger">刪除</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>目前沒有任何梗圖，趕快新增一個吧！</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

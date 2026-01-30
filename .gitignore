@@ -1,0 +1,16 @@
+# Environment
+.env
+
+# MongoDB data
+mongo_data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用者管理</title>
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #e94560;
+            --accent-hover: #ff6b6b;
+            --text-primary: #eef0f2;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a4a;
+            --success: #4ecdc4;
+            --danger: #ff6b6b;
+            --warning: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: var(--accent);
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: transparent;
+            border: 2px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background: var(--warning);
+            color: #000;
+        }
+
+        .btn-success {
+            background: transparent;
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+
+        .btn-success:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        .user-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .user-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .role-badge,
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .role-admin {
+            background: rgba(233, 69, 96, 0.2);
+            color: var(--accent);
+        }
+
+        .role-user {
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--success);
+        }
+
+        .status-locked {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--danger);
+        }
+
+        .status-active {
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--success);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .reset-form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .reset-form input {
+            padding: 0.4rem 0.6rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            width: 120px;
+            font-size: 0.85rem;
+        }
+
+        .flash-success {
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .flash-error {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .current-user {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .user-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-actions {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>👥 使用者管理</h1>
+
+        <nav class="nav">
+            <a href="{{ url_for('admin_index') }}">📋 梗圖管理</a>
+            <a href="{{ url_for('admin_users') }}" class="active">👥 使用者管理</a>
+            <a href="{{ url_for('change_password') }}">🔐 變更密碼</a>
+            <a href="{{ url_for('logout') }}">🚪 登出</a>
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        <div class="card">
+            <h2>➕ 新增使用者</h2>
+            <form action="{{ url_for('admin_users_add') }}" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="username">帳號</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密碼 (至少6字元)</label>
+                        <input type="password" id="password" name="password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">角色</label>
+                        <select id="role" name="role">
+                            <option value="user">一般使用者</option>
+                            <option value="admin">管理員</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn btn-primary">新增</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>📋 使用者列表 ({{ users|length }})</h2>
+            <div class="user-grid">
+                {% for user in users %}
+                <div class="user-card">
+                    <div class="user-info">
+                        <div class="user-name">{{ user.username }}</div>
+                        <div class="user-meta">
+                            <span class="role-badge role-{{ user.role }}">
+                                {{ '管理員' if user.role == 'admin' else '一般使用者' }}
+                            </span>
+                            {% if user.locked_until and user.locked_until > now %}
+                            <span class="status-badge status-locked">🔒 已鎖定</span>
+                            {% else %}
+                            <span class="status-badge status-active">✓ 正常</span>
+                            {% endif %}
+                            {% if user.failed_attempts and user.failed_attempts > 0 %}
+                            <span style="color: var(--warning); font-size: 0.8rem;">
+                                失敗 {{ user.failed_attempts }} 次
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="user-actions">
+                        {% if user._id|string != session.get('user_id') %}
+                        <!-- Reset Password -->
+                        <form class="reset-form" action="{{ url_for('admin_users_reset_password', user_id=user._id) }}"
+                            method="POST">
+                            <input type="password" name="new_password" placeholder="新密碼" required minlength="6">
+                            <button type="submit" class="btn btn-warning btn-sm">重設密碼</button>
+                        </form>
+
+                        <!-- Unlock if locked -->
+                        {% if user.locked_until or (user.failed_attempts and user.failed_attempts > 0) %}
+                        <a href="{{ url_for('admin_users_unlock', user_id=user._id) }}"
+                            class="btn btn-success btn-sm">解鎖</a>
+                        {% endif %}
+
+                        <!-- Delete -->
+                        <form action="{{ url_for('admin_users_delete', user_id=user._id) }}" method="POST"
+                            style="display:inline;" onsubmit="return confirm('確定要刪除此使用者嗎？')">
+                            <button type="submit" class="btn btn-danger btn-sm">刪除</button>
+                        </form>
+                        {% else %}
+                        <span class="current-user">目前登入帳號</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inject current time for comparison
+        window.now = new Date();
+    </script>
+</body>
+
+</html>
